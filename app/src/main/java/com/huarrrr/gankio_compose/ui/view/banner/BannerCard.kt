@@ -16,6 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.huarrrr.gankio_compose.R
 import com.huarrrr.gankio_compose.model.BannerBean
 import com.huarrrr.gankio_compose.model.BaseBannerBean
 import com.huarrrr.gankio_compose.ui.view.CompostablePosition
@@ -36,9 +37,9 @@ fun BannerCard(
     contentScale: ContentScale,
     onBannerClick: () -> Unit,
 ) {
-    if (bean.data == null) {
-        throw NullPointerException("Url or imgRes or filePath must have a not for empty.")
-    }
+//    if (bean.data == null) {
+//        throw NullPointerException("Url or imgRes or filePath must have a not for empty.")
+//    }
 
     Box {
         Card(
@@ -46,7 +47,7 @@ fun BannerCard(
             modifier = modifier
         ) {
             val imgModifier = Modifier.clickable(onClick = onBannerClick)
-            ImageLoader(bean.data, imgModifier, contentScale)
+            ImageLoader(if(bean.data.isNullOrEmpty()) R.mipmap.img_no_photo else bean.data, imgModifier, contentScale)
         }
         Box(
             modifier = Modifier

@@ -10,6 +10,8 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.glide.rememberGlidePainter
+import com.huarrrr.gankio_compose.R
 
 private const val TAG = "ImageLoader"
 
@@ -32,17 +34,21 @@ fun ImageLoader(
 ) {
     when (data) {
         is String -> {
-            val painter = if (data.contains("https://") || data.contains("http://")) {
-//                Log.d(TAG, "PostCardPopular: 加载网络图片")
-                rememberCoilPainter(data)
-            } else {
-//                Log.d(TAG, "PostCardPopular: 加载本地图片")
-                val bitmap = BitmapFactory.decodeFile(data)
-                BitmapPainter(bitmap.asImageBitmap())
-            }
+//            val painter = if (data.contains("https://") || data.contains("http://")) {
+////                Log.d(TAG, "PostCardPopular: 加载网络图片")
+//                rememberCoilPainter(data)
+//            } else {
+////                Log.d(TAG, "PostCardPopular: 加载本地图片")
+//                val bitmap = BitmapFactory.decodeFile(data)
+//                BitmapPainter(bitmap.asImageBitmap())
+//            }
             Image(
                 modifier = modifier,
-                painter = painter,
+                painter = rememberGlidePainter(
+                    request = data,
+                    previewPlaceholder = R.mipmap.img_no_photo,
+                    fadeIn = true
+                ),
                 contentDescription = "",
                 contentScale = contentScale
             )

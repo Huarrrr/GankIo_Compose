@@ -11,8 +11,10 @@ import java.net.UnknownHostException
 
 data class Response<T>(
     @SerializedName("status") var status: Int = 0,
-    @SerializedName("errorMsg") var msg: String? = "",
-    @SerializedName("data") var data: T? = null
+    @SerializedName("msg") var msg: String? = "",
+    @SerializedName("data") var data: T? = null,
+    @SerializedName("page_count") var page_count: Int = 0,
+    @SerializedName("total_counts") var total_counts: Int = 0
 ) {
     fun isSuccess(): Boolean {
         return status == CODE_SUCCESS && data != null

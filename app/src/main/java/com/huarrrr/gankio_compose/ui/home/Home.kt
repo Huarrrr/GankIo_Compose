@@ -1,19 +1,25 @@
 package com.huarrrr.gankio_compose.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,23 +28,26 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.gson.Gson
 import com.huarrrr.gankio_compose.R
-import com.huarrrr.gankio_compose.model.ArticleListData
 import com.huarrrr.gankio_compose.model.BannerBean
+import com.huarrrr.gankio_compose.model.GankData
 import com.huarrrr.gankio_compose.ui.home.vm.HomeViewModel
 import com.huarrrr.gankio_compose.ui.theme.Colors
 import com.huarrrr.gankio_compose.ui.view.GankAppBar
 import com.huarrrr.gankio_compose.ui.view.PageLoading
-import com.huarrrr.gankio_compose.ui.view.SwipeRefreshAndLoadLayout
+import com.huarrrr.gankio_compose.ui.view.RatingBar
 import com.huarrrr.gankio_compose.ui.view.Toaster
 import com.huarrrr.gankio_compose.ui.view.banner.BannerGravity
 import com.huarrrr.gankio_compose.ui.view.banner.BannerPager
 import com.huarrrr.gankio_compose.ui.view.banner.CircleIndicator
+import com.huarrrr.gankio_compose.utils.ImageLoader
 
 /**
  * Home
  *
- * @author Huarrrr on 2021/6/16
+ * @
+ * Huarrrr on 2021/6/16
  */
 @ExperimentalPagerApi
 @Composable
@@ -54,35 +63,73 @@ fun Home(navController: NavHostController) {
             false
         )
         PageLoading(
-            loadState = viewModel.pageState,
-            showLoading = viewModel.showLoading,
-            onReload = { viewModel.firstLoad() }) {
-            SwipeRefreshAndLoadLayout(
-                refreshingState = viewModel.refreshingState,
-                loadState = viewModel.loadState,
-                onRefresh = { viewModel.onRefresh() },
-                onLoad = { viewModel.onLoad() }) {
-                LazyColumn(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Colors.white)
-                ) {
-                    itemsIndexed(viewModel.list) { index, item ->
-                        if (item is List<*>) {
-                            val items = item as List<BannerBean>
-                            BannerPager(
-                                items = items,
-                                indicator = CircleIndicator(gravity = BannerGravity.BottomCenter)
-                            ) { it ->
-                                Toaster.show(it.title)
-                            }
+            loadState = viewModel.homePageState,
+            onReload = {
+                viewModel.loadBanner()
+                viewModel.loadGank()
+            }) {
+            LazyColumn(Modifier.fillMaxWidth()) {
+                item {
+                    BannerView(viewModel.bannerList)
+                }
+                item {
+                    Text(
+                        "—— 热门文章 ——",
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        Colors.text_h1,
+                        17.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
 
-                        } else if (item is ArticleListData) {
-                            ArticleItem(navController, item)
+                itemsIndexed(viewModel.gankList) { index, item ->
+                    GankItem(navController, item)
+                }
+
+                item {
+                    Text(
+                        "—— 热门妹子 ——",
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        Colors.text_h1,
+                        17.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                item {
+                    LazyRow(Modifier.padding(horizontal = 10.dp)) {
+                        itemsIndexed(viewModel.girlList) { index, item ->
+                            Box(
+                                modifier = Modifier
+                                    .width(160.dp)
+                                    .padding(5.dp)
+                            ) {
+                                showImageCard(navController, item, title = item.desc, item.url)
+                            }
                         }
                     }
                 }
+
+
             }
+        }
+    }
+
+
+}
+
+@Composable
+fun BannerView(bannerList: List<BannerBean>) {
+    if (!bannerList.isNullOrEmpty()) {
+        BannerPager(
+            items = bannerList,
+            indicator = CircleIndicator(gravity = BannerGravity.BottomCenter)
+        ) {
+            Toaster.show(it.title)
         }
     }
 }
@@ -90,12 +137,12 @@ fun Home(navController: NavHostController) {
 @Composable
 fun ArticleItem(
     navController: NavHostController,
-    article: ArticleListData
+    article: GankData
 ) {
 
     Card(
         modifier = Modifier
-            .padding(horizontal = 10.dp, vertical = 5.dp)
+            .padding(5.dp)
             .fillMaxWidth(),
         elevation = 5.dp,
         shape = RoundedCornerShape(10.dp)
@@ -151,12 +198,174 @@ fun ArticleItem(
     }
 }
 
+@Composable
+fun GankItem(navController: NavHostController, item: GankData) {
+    Card(
+        modifier = Modifier
+            .padding(horizontal = 10.dp, vertical = 5.dp)
+            .fillMaxWidth()
+            .clickable {
+
+            },
+        elevation = 5.dp,
+        shape = RoundedCornerShape(10.dp)
+    ) {
+        Surface(
+            elevation = 1.dp
+        )
+        {
+            Row {
+                Card(
+                    modifier = Modifier
+                        .width(100.dp)
+                        .aspectRatio(ratio = 1f, matchHeightConstraintsFirst = true),
+                    shape = RoundedCornerShape(5.dp)
+                ) {
+                    val data: Any
+                    data = if (item.images.size == 0) {
+                        R.mipmap.img_no_photo
+                    } else {
+                        item.images[0]
+                    }
+                    ImageLoader(data = data)
+                }
+
+                Column(
+                    Modifier
+                        .padding(10.dp)
+                        .weight(1f)
+                ) {
+                    Row(Modifier.fillMaxWidth()) {
+                        Text(
+                            "热门",
+                            Modifier
+                                .align(Alignment.CenterVertically)
+                                .border(0.5.dp, Color.Red, RoundedCornerShape(3.dp))
+                                .padding(2.dp, 1.dp),
+                            Color.Red,
+                            10.sp
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .width(8.dp)
+                                .height(0.dp)
+                        )
+                        Text(
+                            item.author,
+                            Modifier
+                                .weight(1f)
+                                .align(Alignment.CenterVertically),
+                            Colors.text_h2,
+                            12.sp
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .width(10.dp)
+                                .height(0.dp)
+                        )
+                        Text(
+                            item.createdAt,
+                            Modifier
+                                .align(Alignment.CenterVertically),
+                            Colors.text_h2,
+                            12.sp
+                        )
+                    }
+                    Text(
+                        item.desc,
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp),
+                        Colors.text_h1,
+                        14.sp,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 5.dp)
+                    ) {
+                        Text(
+                            "分类·干货",
+                            Modifier
+                                .weight(1f)
+                                .align(Alignment.CenterVertically),
+                            Colors.text_h2,
+                            12.sp,
+                        )
+                        RatingBar(rating = item.stars.toFloat(), Modifier.height(12.dp))
+                    }
+                }
+
+            }
+
+
+        }
+    }
+}
+
+@Composable
+fun showImageCard(navController: NavHostController, it: GankData, title: String, url: Any) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(10.dp),
+        elevation = 5.dp
+    ) {
+        Box(modifier = Modifier.height(200.dp)) {
+            ImageLoader(data = url)
+            //渐变
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black
+                            ),
+                            startY = 300f
+                        )
+                    )
+                    .clickable {
+                        val gsonString = Gson().toJson(it)
+                        navController.navigate("image?json=${gsonString}")
+                    }
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(5.dp),
+                contentAlignment = Alignment.BottomStart
+            )
+            {
+                Text(title, maxLines = 2, style = TextStyle(color = Color.White, fontSize = 12.sp))
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ArticleItemPreview() {
-    ArticleItem(
-        rememberNavController(),
-        article = ArticleListData(title = "标题标题标题标题标题", author = "作者")
-    )
+    Column(modifier = Modifier.fillMaxSize()) {
+        GankItem(
+            rememberNavController(),
+            item = GankData(
+                title = "标题标题",
+                createdAt = "2020-07-08 12:34:45",
+                desc = "这是一个很长的描述",
+                author = "作者",
+                stars = 3
+            )
+        )
+
+        ArticleItem(
+            rememberNavController(),
+            article = GankData(title = "标题标题标题标题标题", author = "作者")
+        )
+    }
 
 }

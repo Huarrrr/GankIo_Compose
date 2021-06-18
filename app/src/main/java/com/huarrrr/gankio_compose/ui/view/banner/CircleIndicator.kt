@@ -28,8 +28,8 @@ class CircleIndicator(
     var indicatorColor: Color = Color(30, 30, 33, 90),
     var selectIndicatorColor: Color = Colors.red,
     var indicatorDistance: Int = 30,
-    var indicatorSize: Float = 6f,
-    var selectIndicatorSize: Float = 8f,
+    var indicatorSize: Float = 10f,
+    var selectIndicatorSize: Float = 13f,
     override var gravity: Int = BannerGravity.BottomCenter,
 ) : Indicator() {
 
@@ -65,7 +65,7 @@ class CircleIndicator(
                 drawCircle(
                     color,
                     inSize,
-                    center = Offset(start + pageIndex * indicatorDistance, canvasHeight - 50f)
+                    center = Offset(start + pageIndex * indicatorDistance, canvasHeight - 40f)
                 )
             }
         }

@@ -68,7 +68,7 @@ fun BottomTab(
                     currentChanged(2)
                 },
             if (current == 2) R.drawable.ic_tab_my_fill else R.drawable.ic_tab_my,
-            "我的",
+            "妹纸",
             if (current == 2) Colors.main else Colors.unselect
         )
     }

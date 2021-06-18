@@ -21,13 +21,13 @@ enum class LoadState {
 
 @Composable
 fun PageLoading(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxSize(),
     loadState: LoadState = LoadState.SUCCESS,
     onReload: () -> Unit = {},
     showLoading: Boolean = false,
     content: @Composable BoxScope.() -> Unit
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier) {
         when (loadState) {
             LoadState.LOADING -> {
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
