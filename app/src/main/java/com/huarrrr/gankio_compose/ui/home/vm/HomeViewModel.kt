@@ -17,7 +17,7 @@ class HomeViewModel : ViewModel() {
     var homePageState by mutableStateOf(LoadState.LOADING)
 
     var bannerList by mutableStateOf(listOf<BannerBean>())
-    var gankList by mutableStateOf(listOf<GankData>())
+    var gankList by mutableStateOf(mutableListOf<GankData>())
     var girlList by mutableStateOf(listOf<GankData>())
 
 
@@ -49,11 +49,11 @@ class HomeViewModel : ViewModel() {
             if (articleRes.isSuccess() && gankRes.isSuccess() && girlRes.isSuccess()) {
                 homePageState = LoadState.SUCCESS
                 if (!articleRes.data!!.isNullOrEmpty()) {
-                    gankList = articleRes.data!!
+                    gankList.addAll(articleRes.data!!)
                 }
 
                 if (!gankRes.data!!.isNullOrEmpty()) {
-                    gankList = gankRes.data!!
+                    gankList.addAll(gankRes.data!!)
                 }
 
                 if (!girlRes.data!!.isNullOrEmpty()) {

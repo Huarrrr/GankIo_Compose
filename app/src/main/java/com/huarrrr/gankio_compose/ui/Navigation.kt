@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.gson.Gson
 import com.huarrrr.gankio_compose.model.GankData
+import com.huarrrr.gankio_compose.ui.view.ImageViewer
 import com.huarrrr.gankio_compose.ui.web.Web
 
 @ExperimentalFoundationApi
@@ -23,10 +24,9 @@ fun ComposeNavigation() {
             Web(navController, url)
         }
 
-        composable("image?json={json}") { it
-            val json = it.arguments?.getString("json") ?: ""
-            val subscription = Gson().fromJson(json,GankData::class.java)
-            Web(navController, subscription.url)
+        composable("image?image={image}") {
+            val img = it.arguments?.getString("image") ?: ""
+            ImageViewer(navController, img)
         }
 
     }

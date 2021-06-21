@@ -12,7 +12,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.huarrrr.gankio_compose.ui.gank.Gank
 import com.huarrrr.gankio_compose.ui.home.Home
-import com.huarrrr.gankio_compose.ui.profile.Profile
+import com.huarrrr.gankio_compose.ui.girl.Girl
 import com.huarrrr.gankio_compose.ui.view.BottomTab
 import kotlinx.coroutines.launch
 
@@ -34,7 +34,7 @@ fun Main(navController: NavHostController) {
                 }
 
                 2 -> {
-                    Profile()
+                    Girl(navController)
                 }
             }
         }

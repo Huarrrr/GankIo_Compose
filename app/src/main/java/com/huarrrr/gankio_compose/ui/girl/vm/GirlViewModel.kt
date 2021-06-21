@@ -1,4 +1,4 @@
-package com.huarrrr.gankio_compose.ui.profile.vm
+package com.huarrrr.gankio_compose.ui.girl.vm
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
  * @author Huarrrr on 2021/6/17
  */
 
-class ProfileViewModel:ViewModel() {
+class GirlViewModel:ViewModel() {
     var list by mutableStateOf(mutableListOf<GankData>())
     init {
         lazyLoad()

@@ -29,7 +29,7 @@ interface IApi {
     suspend fun getHotArticleList(): Response<List<GankData>>
 
     @GET("https://gank.io/api/v2/hot/views/category/GanHuo/count/3")
-    suspend fun getHotGankList(): Response<List<GankData>>
+    suspend fun getHotGankList(): Response<MutableList<GankData>>
 
     @GET("https://gank.io/api/v2/hot/views/category/Girl/count/10")
     suspend fun getHotGirlList(): Response<List<GankData>>

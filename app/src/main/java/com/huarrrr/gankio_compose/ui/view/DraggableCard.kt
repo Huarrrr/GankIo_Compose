@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -24,7 +25,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.huarrrr.gankio_compose.model.GankData
-import com.huarrrr.gankio_compose.ui.profile.SwipeResult
+import com.huarrrr.gankio_compose.ui.girl.SwipeResult
 import com.huarrrr.gankio_compose.ui.theme.Colors
 import com.huarrrr.gankio_compose.ui.theme.Tomato
 import com.huarrrr.gankio_compose.utils.ImageLoader
@@ -41,6 +42,7 @@ import kotlin.math.abs
 fun DraggableCard(
     item: GankData,
     modifier: Modifier = Modifier,
+    onTouch:(String) -> Unit,
     onSwiped: (Any, GankData) -> Unit,
     onFavorite:(GankData) -> Unit
 ) {
@@ -77,7 +79,9 @@ fun DraggableCard(
                     data = item.url,
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxWidth()
+                        .fillMaxWidth().clickable {
+                            onTouch(item.url)
+                        }
                 )
                 Text(
                     text = item.title,

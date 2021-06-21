@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -28,7 +27,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.gson.Gson
 import com.huarrrr.gankio_compose.R
 import com.huarrrr.gankio_compose.model.BannerBean
 import com.huarrrr.gankio_compose.model.GankData
@@ -70,7 +68,7 @@ fun Home(navController: NavHostController) {
             }) {
             LazyColumn(Modifier.fillMaxWidth()) {
                 item {
-                    BannerView(viewModel.bannerList)
+                    BannerView(navController, viewModel.bannerList)
                 }
                 item {
                     Text(
@@ -123,77 +121,13 @@ fun Home(navController: NavHostController) {
 }
 
 @Composable
-fun BannerView(bannerList: List<BannerBean>) {
+fun BannerView(navController: NavHostController, bannerList: List<BannerBean>) {
     if (!bannerList.isNullOrEmpty()) {
         BannerPager(
             items = bannerList,
             indicator = CircleIndicator(gravity = BannerGravity.BottomCenter)
         ) {
-            Toaster.show(it.title)
-        }
-    }
-}
-
-@Composable
-fun ArticleItem(
-    navController: NavHostController,
-    article: GankData
-) {
-
-    Card(
-        modifier = Modifier
-            .padding(5.dp)
-            .fillMaxWidth(),
-        elevation = 5.dp,
-        shape = RoundedCornerShape(10.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.linearGradient(
-                        arrayListOf(
-                            colorResource(R.color.article_item_bg_start),
-                            colorResource(R.color.article_item_bg_mid),
-                            colorResource(R.color.article_item_bg_end)
-                        )
-                    )
-                )
-                .clickable {
-                    navController.navigate("web?url=${article.url}")
-                }
-
-        ) {
-            Column(
-                Modifier.padding(16.dp, 10.dp)
-            ) {
-                //标题
-                Text(
-                    article.title,
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp),
-                    Colors.text_h1,
-                    15.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 5.dp)
-                ) {
-                    //作者
-                    Text(
-                        article.author,
-                        Modifier
-                            .weight(1f)
-                            .align(Alignment.CenterVertically),
-                        Colors.text_h2,
-                        12.sp,
-                    )
-                }
-            }
+            navController.navigate("web?url=${it.url}")
         }
     }
 }
@@ -205,7 +139,7 @@ fun GankItem(navController: NavHostController, item: GankData) {
             .padding(horizontal = 10.dp, vertical = 5.dp)
             .fillMaxWidth()
             .clickable {
-
+                Toaster.show("uuuuuu")
             },
         elevation = 5.dp,
         shape = RoundedCornerShape(10.dp)
@@ -277,7 +211,9 @@ fun GankItem(navController: NavHostController, item: GankData) {
                         item.desc,
                         Modifier
                             .fillMaxWidth()
-                            .padding(top = 4.dp),
+                            .padding(top = 4.dp).clickable {
+                                navController.navigate("web?url=${item.url}")
+                            },
                         Colors.text_h1,
                         14.sp,
                         maxLines = 2,
@@ -330,8 +266,11 @@ fun showImageCard(navController: NavHostController, it: GankData, title: String,
                         )
                     )
                     .clickable {
-                        val gsonString = Gson().toJson(it)
-                        navController.navigate("image?json=${gsonString}")
+                        if (it.type == "Girl") {
+                            navController.navigate("image?image=${it.images[0]}")
+                        } else {
+                            navController.navigate("web?url=${it.url}")
+                        }
                     }
             )
             Box(
@@ -360,11 +299,6 @@ fun ArticleItemPreview() {
                 author = "作者",
                 stars = 3
             )
-        )
-
-        ArticleItem(
-            rememberNavController(),
-            article = GankData(title = "标题标题标题标题标题", author = "作者")
         )
     }
 

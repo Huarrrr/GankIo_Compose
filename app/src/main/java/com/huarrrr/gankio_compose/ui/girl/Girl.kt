@@ -1,9 +1,7 @@
-package com.huarrrr.gankio_compose.ui.profile
+package com.huarrrr.gankio_compose.ui.girl
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -14,11 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.huarrrr.gankio_compose.R
-import com.huarrrr.gankio_compose.ui.profile.vm.ProfileViewModel
+import com.huarrrr.gankio_compose.ui.girl.vm.GirlViewModel
 import com.huarrrr.gankio_compose.ui.theme.*
 import com.huarrrr.gankio_compose.ui.view.DraggableCard
 import com.huarrrr.gankio_compose.ui.view.GankAppBar
@@ -31,8 +29,8 @@ import com.huarrrr.gankio_compose.ui.view.Toaster
  */
 
 @Composable
-fun Profile() {
-    val viewModel: ProfileViewModel = viewModel()
+fun Girl(navController: NavHostController) {
+    val viewModel: GirlViewModel = viewModel()
     Surface(modifier = Modifier.fillMaxSize()) {
         val boxModifier = Modifier
         Column(
@@ -54,13 +52,15 @@ fun Profile() {
             ) {
                 val listEmpty = remember { mutableStateOf(false) }
                 DatingLoader(modifier = boxModifier)
-                viewModel.list.forEachIndexed { index,gank ->
+                viewModel.list.forEachIndexed { index, gank ->
                     if (!listEmpty.value) {
                         DraggableCard(
                             item = gank,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(16.dp),
+                                .padding(16.dp),{
+//                                    navController.navigate("image?image={$it}")
+                            },
                             { _, item ->
                                 if (viewModel.list.isNotEmpty()) {
                                     viewModel.list.remove(item)
@@ -96,12 +96,4 @@ fun DatingLoader(modifier: Modifier) {
 
 enum class SwipeResult {
     ACCEPTED, REJECTED
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview9() {
-    GankIo_ComposeTheme {
-        Profile()
-    }
 }
